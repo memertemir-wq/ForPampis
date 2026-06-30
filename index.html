@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sürpriz!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght=700&family=Poppins:wght=400;600&display=swap');
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background-color 1s ease;
+        }
+        /* Arka plan gökkuşağı animasyonu */
+        .rainbow-bg {
+            animation: rainbow 3s linear infinite;
+        }
+        @keyframes rainbow {
+            0% { background-color: #ff0000; }
+            14% { background-color: #ff7f00; }
+            28% { background-color: #ffff00; }
+            42% { background-color: #00ff00; }
+            57% { background-color: #0000ff; }
+            71% { background-color: #4b0082; }
+            85% { background-color: #9400d3; }
+            100% { background-color: #ff0000; }
+        }
+        #proposal-container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            height: 150px;
+        }
+        button {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            padding: 15px 50px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+        #btn-yes {
+            background: linear-gradient(45deg, #ff007f, #ff00ff);
+            color: white;
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+            z-index: 5;
+            position: relative;
+        }
+        #btn-yes:hover {
+            box-shadow: 0 0 40px rgba(255, 0, 127, 0.9);
+        }
+        #btn-no {
+            background: #333;
+            color: white;
+            position: relative;
+            z-index: 6;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        #celebration-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        /* FATMA & MERT Kayan Yazı */
+        .fatma-text {
+            position: absolute;
+            font-family: 'Dancing Script', cursive;
+            font-size: 15rem;
+            font-weight: bold;
+            white-space: nowrap;
+            opacity: 0.9;
+            text-shadow: 0 0 30px rgba(255,255,255,0.8);
+            animation: slide linear infinite;
+        }
+        @keyframes slide {
+            from { transform: translateX(100vw); }
+            to { transform: translateX(-150%); }
+        }
+        /* Kalpler */
+        .heart {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: var(--heart-color, red);
+            transform: rotate(-45deg);
+            animation: floatUp 4s ease-in forwards;
+            box-shadow: 0 0 30px var(--heart-color, red);
+        }
+        
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: var(--heart-color, red);
+            border-radius: 50%;
+            box-shadow: 0 0 30px var(--heart-color, red);
+        }
+        
+        .heart::before {
+            top: -60px;
+            left: 0;
+        }
+        
+        .heart::after {
+            top: 0;
+            left: 60px;
+        }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(110vh) rotate(-45deg) scale(0.3);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-30vh) rotate(-45deg) scale(2);
+                opacity: 0;
+            }
+        }
+        
+        /* Aşk Mesajları Alanı */
+        .love-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Dancing Script', cursive;
+            color: white;
+            z-index: 20;
+            text-align: center;
+            width: 90%;
+            display: none;
+            font-size: 6rem;
+            text-shadow: 0 0 40px #ff007f, 0 0 80px #ff00ff;
+            animation: pulse 1s infinite alternate;
+        }
+
+        /* Sağa Sola Kayan Öpücük Yazısı */
+        .muah-message {
+            position: absolute;
+            top: 50%;
+            left: 100vw;
+            transform: translateY(-50%);
+            font-family: 'Dancing Script', cursive;
+            color: white;
+            z-index: 20;
+            white-space: nowrap;
+            display: none;
+            font-size: 4.5rem;
+            text-shadow: 0 0 40px #00ffff, 0 0 80px #ff00ff;
+            animation: muahSlide 4.5s linear forwards;
+        }
+
+        @keyframes muahSlide {
+            from { left: 100vw; }
+            to { left: -180%; } /* Yazının tamamen kayıp yok olması için geniş tolerans */
+        }
+
+        /* Merkezde Beliren Yüzük */
+        .ring-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 25;
+            display: none;
+        }
+
+        .ring-img {
+            font-size: 14rem;
+            text-shadow: 0 0 60px #ffd700;
+            animation: ringPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes ringPop {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Kapanış efekti animasyonu */
+        .fade-out-scale {
+            animation: shrinkOut 1s forwards cubic-bezier(0.6, -0.28, 0.735, 0.045) !important;
+        }
+
+        @keyframes shrinkOut {
+            to {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            from { transform: translate(-50%, -50%) scale(1); }
+            to { transform: translate(-50%, -50%) scale(1.05); }
+        }
+        
+        /* Havai Fişek Canvası */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="proposal-container">
+        <h1>Benimle Evlenir Misin Fatma?</h1>
+        <div class="buttons">
+            <button id="btn-yes">EVET</button>
+            <button id="btn-no">HAYIR</button>
+        </div>
+    </div>
+    
+    <div id="celebration-container">
+        <canvas id="fw-canvas"></canvas>
+        <div id="love-msg" class="love-message">SENİ ÇOK AMA ÇOK SEVİYORUM CANIM PAMPİŞİM :3</div>
+        <div id="muah-msg" class="muah-message">MMMMMMMMMMMMMMMMUUUUUUUUUUUUUWWWWWWWWWWWWAAAAAAAAAAAAAHHHHHHHHHHHH</div>
+        <div id="ring-box" class="ring-container">
+            <span class="ring-img">💍</span>
+        </div>
+    </div>
+
+    <script>
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const proposalContainer = document.getElementById('proposal-container');
+        const celebrationContainer = document.getElementById('celebration-container');
+        const loveMsg = document.getElementById('love-msg');
+        const muahMsg = document.getElementById('muah-msg');
+        const ringBox = document.getElementById('ring-box');
+        
+        let noCount = 0;
+        let yesScale = 1;
+        let runningTextTimers = [];
+        let textSpawnInterval;
+        let heartInterval;
+
+        btnNo.addEventListener('click', () => {
+            noCount++;
+            yesScale += 0.8;
+            btnYes.style.transform = `scale(${yesScale})`;
+            
+            if (noCount >= 3) {
+                btnNo.style.display = 'none';
+                proposalContainer.style.position = 'absolute';
+                proposalContainer.style.top = '50%';
+                proposalContainer.style.left = '50%';
+                proposalContainer.style.transform = 'translate(-50%, -50%)';
+                btnYes.style.transform = `scale(${yesScale + 1})`;
+                btnYes.style.boxShadow = '0 0 100px rgba(255, 0, 127, 1)';
+            } else {
+                const maxX = window.innerWidth - btnNo.offsetWidth - 20;
+                const maxY = window.innerHeight - btnNo.offsetHeight - 20;
+                const randomX = Math.max(20, Math.random() * maxX);
+                const randomY = Math.max(20, Math.random() * maxY);
+                btnNo.style.position = 'fixed';
+                btnNo.style.left = randomX + 'px';
+                btnNo.style.top = randomY + 'px';
+            }
+        });
+
+        btnYes.addEventListener('click', () => {
+            proposalContainer.style.display = 'none';
+            document.body.classList.add('rainbow-bg');
+            celebrationContainer.style.display = 'block';
+            
+            // Havai Fişekleri Başlat
+            initFireworks();
+
+            // Kayan Yazıları Başlat (Fatma & Mert)
+            const colors = ['#FFFFFF', '#FFD700', '#00FFFF', '#FF1493', '#32CD32'];
+            
+            for (let j = 0; j < 5; j++) {
+                setTimeout(() => {
+                    createFatmaMertText(colors[j % colors.length]);
+                }, j * 600);
+            }
+
+            textSpawnInterval = setInterval(() => {
+                createFatmaMertText(colors[Math.floor(Math.random() * colors.length)]);
+            }, 800);
+
+            // Kalpler
+            heartInterval = setInterval(() => {
+                createHeart();
+            }, 150);
+
+            // 8 Saniye Sonra Yazıları Durdur ve "Seni Seviyorum" Mesajını Aç
+            setTimeout(() => {
+                clearInterval(textSpawnInterval);
+                const currentTexts = document.querySelectorAll('.fatma-text');
+                currentTexts.forEach(txt => txt.remove());
+                runningTextTimers.forEach(timer => clearTimeout(timer));
+
+                // Seni çok seviyorum pampişim gösteriliyor (4 saniye kalacak)
+                loveMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    loveMsg.style.display = 'none';
+                    muahMsg.style.display = 'block'; // Muuwwaah kaymaya başlar
+
+                    // Yazının kayma animasyonu (4.5s) bittikten sonra yüzük gelecek
+                    setTimeout(() => {
+                        muahMsg.style.display = 'none';
+                        ringBox.style.display = 'block'; // Yüzük tam merkezde belirir
+
+                        // Yüzük belirdikten 4 saniye sonra her şey kapanır
+                        setTimeout(() => {
+                            ringBox.classList.add('fade-out-scale');
+                        }, 4000);
+
+                    }, 4500);
+
+                }, 4000);
+
+            }, 8000);
+        });
+
+        function createFatmaMertText(color) {
+            const text = document.createElement('div');
+            text.classList.add('fatma-text');
+            text.textContent = 'Fatma & Mert';
+            text.style.color = color;
+            text.style.top = Math.random() * 60 + 'vh'; 
+            
+            const duration = Math.random() * 2 + 2.5;
+            text.style.animationDuration = duration + 's';
+            
+            celebrationContainer.appendChild(text);
+            
+            let timer = setTimeout(() => {
+                text.remove();
+                if(celebrationContainer.contains(loveMsg) && loveMsg.style.display !== 'block' && muahMsg.style.display !== 'block') {
+                    createFatmaMertText(color);
+                }
+            }, duration * 1000);
+            
+            runningTextTimers.push(timer);
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 150);
+            const b = Math.floor(Math.random() * 256);
+            heart.style.setProperty('--heart-color', `rgb(${r}, ${g}, ${b})`);
+            
+            const duration = Math.random() * 2 + 2;
+            heart.style.animationDuration = duration + 's';
+            
+            const scale = Math.random() * 1.2 + 0.4;
+            heart.style.transform = `rotate(-45deg) scale(${scale})`;
+            
+            celebrationContainer.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
+        }
+
+        /* --- HAVAİ FİŞEK MOTORU (Canvas) --- */
+        function initFireworks() {
+            const canvas = document.getElementById('fw-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            let particles = [];
+            
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    this.radius = Math.random() * 3 + 1;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 6 + 4;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.015 + 0.015;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.08;
+                    this.alpha -= this.decay;
+                }
+            }
+
+            function spawnFirework() {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * (canvas.height * 0.6);
+                const colors = ['#FF007F', '#FF00FF', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                for (let i = 0; i < 60; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            setInterval(spawnFirework, 400);
+            spawnFirework();
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach((p, index) => {
+                    p.update();
+                    p.draw();
+                    if (p.alpha <= 0) {
+                        particles.splice(index, 1);
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
